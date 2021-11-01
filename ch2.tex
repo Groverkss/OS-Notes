@@ -6,7 +6,7 @@
 
 \begin{tcolorbox}
     \textbf{Crux Of The Problem:} Although there are only a few physical CPUs
-    available, how can the OS provide the ullusion of nearly-endless supply of 
+    available, how can the OS provide the illusion of nearly-endless supply of 
     said CPUs?\\
 \end{tcolorbox}
 
@@ -41,14 +41,14 @@ accomplish its work effectively.
 The \textit{direct execution} part of the idea: just run the program directly
 on the CPU. Thus, when the OS wishes to start a program, it creates a process
 entry for it in a process list, allocates some memory for it, loads the program
-code into memory, locates its entery point (main()), jumps to it, and starts
+code into memory, locates its entry point (main()), jumps to it, and starts
 running the user's code.\\
 
 This approach gives rise to a few problems:
 
 \begin{itemize}
-    \item How to make sure that the program does not do anything that we dont
-        want it to do while still maintaining efficency?
+    \item How to make sure that the program does not do anything that we don't
+        want it to do while still maintaining efficiency?
     \item How do we stop a process and switch to another process, i.e. how
         to implement \textbf{time sharing} we require to virtualize the CPU?
 \end{itemize}
@@ -60,37 +60,37 @@ as issuing an I/O request to a disk, or gaining access to more system resources
 such as CPU or memory?\\
 
 \begin{tcolorbox}
-    \textbf{The Curx: How to perform restricted operations}
+    \textbf{The Crux: How to perform restricted operations}
 
     A process must be able
     to perform I/O and some other restricted operations, but without giving the
     process complete control over the system.\\
 \end{tcolorbox}
 
-Two differend modes:
+Two different modes:
 
 \begin{itemize}
     \item \textbf{User Mode:} Code that runs in user mode is restricted in what
         it can do. For example, when running in user mode, a process can't
-        issure I/O requests; doing so would result in the processor raising an
+        issue I/O requests; doing so would result in the processor raising an
         exception.
-    \item \textbf{Kernal Mode:} Mode the operating system (or kernal) runs in.
+    \item \textbf{Kernel Mode:} Mode the operating system (or kernel) runs in.
         In this mode, code that runs can do whatever it likes, including
         privileged operations such as issuing I/O requests and executing
         restricted instructions.
 \end{itemize}
 
 All modern hardware provides the ability for user programs to perform a 
-\textbf{system call}. System calls allow the kernal to carfully expose
+\textbf{system call}. System calls allow the kernel to carefully expose
 certain key pieces of functionality to user programs such as accessing the file
-system, creating and destroying the processes, communicationg with other
+system, creating and destroying the processes, communicating with other
 processes, and allocating more memory.
 
 \paragraph{System calls}
 
 To execute a system call, a program must execute a special \textbf{trap}
-instruction. This instruction jumps into the kernal and raises privilege level
-to kernal mode; once in the kernal, the system can now perform the restricted 
+instruction. This instruction jumps into the kernel and raises privilege level
+to kernel mode; once in the kernel, the system can now perform the restricted 
 operations needed and thus the required work for the calling process. When 
 finished, the OS calls a special \textbf{return-from-trap} instruction, which
 returns into the calling user program while simultaneously reducing the 
@@ -100,17 +100,17 @@ When executing a trap, the caller's registers must be saved in order to
 return correctly when the OS issues the return-from-trap instruction.\\
 
 On x86, the processor will push the program counter, flags and a few other
-registers onto a per-process \textbf{kernal stack}; return-from-trap
+registers onto a per-process \textbf{kernel stack}; return-from-trap
 will pop these values from the stack and resume execution.
 
 \paragraph{How does the trap know which code to run inside the OS?}
 
 Clearly, the calling process can't specify and address to jump to; doing so 
-would allow programs to jump anywhere into the kernal which is not secure. The
-kernal must control what code executes upon a trap.\\
+would allow programs to jump anywhere into the kernel which is not secure. The
+kernel must control what code executes upon a trap.\\
 
-The kernal does so by setting up a \textbf{trap table} at boot time. When the
-machine boots up, it does so in kernal mode. One of the first things the OS
+The kernel does so by setting up a \textbf{trap table} at boot time. When the
+machine boots up, it does so in kernel mode. One of the first things the OS
 does is to tell the hardware what code to run when certain exceptional events
 occur. The OS informs the hardware of these locations of these
 \textbf{trap handlers}, usually with some kind of special instruction. Once
@@ -119,25 +119,25 @@ the machine is rebooted, and thus hardware knows what to do when system calls
 and other exceptional events take place.\\
 
 To perform the exact system call, a \textbf{system-call number} is usually 
-asigned to each system call. The user code has to place the desired system-call
+assigned to each system call. The user code has to place the desired system-call
 number in a register or at a specific location in the stack; the OS, when
-handeling the system call inside the trap handler, examines the number,
+handling the system call inside the trap handler, examines the number,
 ensures it is valid, and, if it is, executes the corresponding code. This
 level of indirection serves as a form of \textbf{protection}; user code cannot
 specify an exact address to jump to, but rather must request a particular 
 service via a number.\\
 
 Telling the hardware where the trap tables are is a \textbf{privileged} 
-operationg, otherwise you could make your own trap tables and compromise the
+operating, otherwise you could make your own trap tables and compromise the
 system.\\
 
 How all this works:
 
 \begin{enumerate}
-    \item At boot time, the kernal initializes the trap table, and the CPU
-        remembers its location for subsequent use. The kernal does so via
+    \item At boot time, the kernel initializes the trap table, and the CPU
+        remembers its location for subsequent use. The kernel does so via
         a privileged instruction.
-    \item The kernal sets up a few things (allocating memory, etc.) before
+    \item The kernel sets up a few things (allocating memory, etc.) before
         using a return-from-trap instruction to start the execution of the 
         process. When the process wishes to issue a system call, it traps back
         into the OS, which handles it and once again returns control via a 
@@ -148,7 +148,7 @@ How all this works:
 \subsubsection{Problem \#2: Switching Between Processes}
 
 When a process is running on the CPU, this by definition means the OS is
-\textit{not} running. If OS isnt running how can
+\textit{not} running. If OS isn't running how can
 it change a process? (it cant).\\
 
 \begin{tcolorbox}
@@ -198,7 +198,7 @@ the OS executes a return-from-trap instruction and executes the new process.\\
 
 By switching stacks pointers (stack pointer is a register),
 the kernel enters call to the switch code in the 
-context of one process (the interrupted one) amd returns in the context of
+context of one process (the interrupted one) and returns in the context of
 another (the soon-to-be-executing one). By switching stack is actually how the
 process is switched.\\
 
@@ -207,9 +207,9 @@ There are two types of register saves/restores that happen here:
 \begin{itemize}
     \item When the timer interrupt occurs. The \textit{user registers} of the
         running process are implicitly saved by the \textit{hardware}, using
-        the kernal stack of the process.
-    \item When OS performs the context switch. The \textit{kernal registers} 
-        are explicitly saved by the \textit{software} (i.e. th OS), but this
+        the kernel stack of the process.
+    \item When OS performs the context switch. The \textit{kernel registers} 
+        are explicitly saved by the \textit{software} (i.e. the OS), but this
         time into memory in the process structure of the process.
 \end{itemize}
 
@@ -291,13 +291,13 @@ we can build a worst case for SJF:
 \subsection{Shortest Time-To-Completion First (STCF)}
 
 To address this concern, we need to relax assumption 3 (jobs started, must run
-to completion). SJF by our defination was a \textbf{non-preemptive} scheduler,
+to completion). SJF by our definition was a \textbf{non-preemptive} scheduler,
 and thus suffered from the problems in figure \ref{74}.\\
 
 To improve upon that, we add preemption to SJF, known as STCF. Any time
-a new job enters the system, the STCF schedular determines which of the
+a new job enters the system, the STCF scheduler determines which of the
 remaining jobs has least time left, and schedules that. It can be proven
-that under the current assumptions, this is the best schedular
+that under the current assumptions, this is the best scheduler
 (w.r.t turnaround time)
 
 \begin{figure}[h!]
@@ -308,8 +308,8 @@ that under the current assumptions, this is the best schedular
 \end{figure}
 
 \textbf{New Metric: Response Time}: If our only metric was turnaround time and
-we knew job runtime, STCF would be a great policy. But inroduction of
-time-sharing machines, required interactive performance from sustem as well.
+we knew job runtime, STCF would be a great policy. But introduction of
+time-sharing machines, required interactive performance from system as well.
 Thus a new metric was needed: \textbf{response time}
 
 $$
@@ -342,7 +342,7 @@ The length of time-slice is obviously a multiple of timer-interupt.\\
 The length of time slice is critical for RR. The shorter it is, the better
 performance of RR under response-time metric. However, too small time-slice can
 result in time taken to context switch to dominate overall performance. Thus,
-time slices hould be made long enough to  \textbf{amortize} the cost of
+time slices should be made long enough to  \textbf{amortize} the cost of
 switching without making it so long that system is no longer responsive.\\
 
 RR is one of the \textit{worst} policies for turnaround time because it extends
@@ -367,9 +367,9 @@ we will describe the most well-known approach to
 scheduling, \textbf{MLFQ}. \\
 
 \begin{tcolorbox}
-    \textbf{The Crus: How To Schedule Without Perfect Knowledge?}\\
+    \textbf{The Crux: How To Schedule Without Perfect Knowledge?}\\
 
-    How can we design a schedular that both minimizes response time for
+    How can we design a scheduler that both minimizes response time for
     interactive jobs while also minimizing turnaround time without a
     \textit{prior} knowledge of job length?\\
 \end{tcolorbox}
@@ -380,7 +380,7 @@ at a given time. Basic rules for MLFQ:
 
 \begin{enumerate}
     \item If Priority(A) $>$ Priority(B), A runs (B doesn't)
-    \item If Prority(A) = Priority(B), A \& B run in RR.
+    \item If Priority(A) = Priority(B), A \& B run in RR.
 \end{enumerate}
 
 Rather than giving a fixed priority to each job, MLFQ \textit{varies} the
@@ -403,10 +403,10 @@ predict its \textit{future} behavior.
 
 \subsubsection{Attempt \#1: How to Change Priority}
 
-Keep in mind: Our workload contains a mix of interactive jobs taht are short
+Keep in mind: Our workload contains a mix of interactive jobs that are short
 running (and may frequently relinquish the CPU), and some longer running
 "CPU-bound" jobs that need a lot of CPU time but where the response time
-isn't important. Here is the first attempt at an algoritm:
+isn't important. Here is the first attempt at an algorithm:
 
 \begin{enumerate}
         \setcounter{enumi}{2}
@@ -417,7 +417,7 @@ isn't important. Here is the first attempt at an algoritm:
             \item If a job uses up an entire time slice while running, 
                 its priority is \textit{reduced}.
             \item If a job gives up the CPU before the time slice is up,
-                it staus at the \textit{same} priority level.
+                it status at the \textit{same} priority level.
         \end{itemize}
 \end{enumerate}
 
@@ -427,13 +427,13 @@ There is a problem of \textbf{starvation:} if there are "too many" interactive
 jobs in the system, they will combine to consume \textit{all} CPU time, and
 thus long-running jobs will \textit{never} receive any CPU time.\\
 
-Another problem is that the schedular can be \textbf{gamed}. Gaming a schedular
-refers to the idea to tricking the schedular in giving more time than the job's
+Another problem is that the scheduler can be \textbf{gamed}. Gaming a scheduler
+refers to the idea to tricking the scheduler in giving more time than the job's
 share. Before the time-slice is over, the job could issue and I/O and remain
 at the same priority. Doing so, allows the program to gain a higher percentage
 of CPU time.
 
-\subsection{Attemp \#2: The Priority Boost}
+\subsection{Attempt \#2: The Priority Boost}
 
 We add a new rule to handle the flaws. 
 
